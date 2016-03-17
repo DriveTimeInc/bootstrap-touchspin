@@ -45,6 +45,7 @@
       initval: '',
       replacementval: '',
       step: 1,
+      commas: false,
       decimals: 0,
       stepinterval: 100,
       forcestepdivisibility: 'round', // none | floor | round | ceil
@@ -72,6 +73,7 @@
       initval: 'init-val',
       replacementval: 'replacement-val',
       step: 'step',
+      commas: 'commas',
       decimals: 'decimals',
       stepinterval: 'step-interval',
       verticalbuttons: 'vertical-buttons',
@@ -179,7 +181,7 @@
             parentelement = originalinput.parent();
 
         if (initval !== '') {
-          initval = Number(initval).toFixed(settings.decimals);
+          initval = _addCommas(Number(initval).toFixed(settings.decimals));
         }
 
         originalinput.data('initvalue', initval).val(initval);
@@ -474,6 +476,12 @@
         });
       }
 
+      function _addCommas(val) {
+        return settings.commas
+          ? val.toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          : val;
+      }
+      
       function _bindEventsInterface() {
         originalinput.on('touchspin.uponce', function() {
           stopSpin();
@@ -518,7 +526,7 @@
       function _checkValue() {
         var val, parsedval, returnval;
 
-        val = originalinput.val();
+        val = originalinput.val().replace(',', '');
 
         if (val === '') {
           if (settings.replacementval !== '') {
@@ -560,7 +568,7 @@
         returnval = _forcestepdivisibility(returnval);
 
         if (Number(val).toString() !== returnval.toString()) {
-          originalinput.val(returnval);
+          originalinput.val(_addCommas(returnval));
           originalinput.trigger('change');
         }
       }
@@ -586,7 +594,7 @@
       function upOnce() {
         _checkValue();
 
-        value = parseFloat(elements.input.val());
+        value = parseFloat(elements.input.val().replace(',', ''));
         if (isNaN(value)) {
           value = 0;
         }
@@ -602,7 +610,7 @@
           stopSpin();
         }
 
-        elements.input.val(Number(value).toFixed(settings.decimals));
+        elements.input.val(_addCommas(Number(value).toFixed(settings.decimals)));
 
         if (initvalue !== value) {
           originalinput.trigger('change');
@@ -612,7 +620,7 @@
       function downOnce() {
         _checkValue();
 
-        value = parseFloat(elements.input.val());
+        value = parseFloat(elements.input.val().replace(',', ''));
         if (isNaN(value)) {
           value = 0;
         }
@@ -628,7 +636,7 @@
           stopSpin();
         }
 
-        elements.input.val(value.toFixed(settings.decimals));
+        elements.input.val(_addCommas(value.toFixed(settings.decimals)));
 
         if (initvalue !== value) {
           originalinput.trigger('change');
