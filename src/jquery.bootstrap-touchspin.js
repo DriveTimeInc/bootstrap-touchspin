@@ -144,8 +144,8 @@
         var value = elements.input.val();
 
         if (value !== '') {
-          value = Number(elements.input.val());
-          elements.input.val(value.toFixed(settings.decimals));
+          value = Number(elements.input.val().replace(',', ''));
+          elements.input.val(_addCommas(value.toFixed(settings.decimals)));
         }
       }
 
@@ -169,7 +169,7 @@
       }
 
       function _buildHtml() {
-        var initval = originalinput.val(),
+        var initval = originalinput.val().replace(',', ''),
             parentelement = originalinput.parent();
 
         if (initval !== '') {
@@ -562,6 +562,13 @@
         if (Number(val).toString() !== returnval.toString()) {
           originalinput.val(_addCommas(returnval));
           originalinput.trigger('change');
+          return;
+        }
+        
+        var commaval = _addCommas(returnval);
+
+        if (commaval !== originalinput.val()) {
+            originalinput.val(commaval);
         }
       }
 
